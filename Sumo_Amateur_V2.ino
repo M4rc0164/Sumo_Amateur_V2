@@ -45,11 +45,11 @@ void loop(){
         avance();
         delay(1000);
       }else if(rivalIzq){
-        giroIzquierda();
+        ejeIzquierda();
         delay(1000);
         detener();
       }else if(rivalDer){
-        giroDerecha();
+        ejeDerecha();
         delay(1000);
         detener();
       }else{
