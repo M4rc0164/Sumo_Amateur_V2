@@ -66,11 +66,3 @@ void detener(){
   analogWrite(PWMB, 0);
 }
 
-void busqueda(){ //Gira sobre su propio eje hacia la derecha con mayor velocidad 
-  digitalWrite(AI1, HIGH);
-  digitalWrite(AI2, LOW);
-  digitalWrite(BI1, LOW);
-  digitalWrite(BI2, HIGH);
-  analogWrite(PWMA, velociadMid);
-  analogWrite(PWMB, velociadMid);
-}
