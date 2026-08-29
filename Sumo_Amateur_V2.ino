@@ -4,8 +4,8 @@
 #include "Infrarrojo.h"
 
 //Estados de maniobra
-enum EstadoLRT {BASE, RETROCO, GIRO_DER, GIRO_IZQ}
-EstadoLRT estadoActual = BASE;
+enum EstadoLRT {BUSQUEDA, RETROCO, GIRO_DER, GIRO_IZQ}
+EstadoLRT estadoActual = BUSQUEDA;
 
 unsigned long tiempoInicio = 0;
 
@@ -27,8 +27,11 @@ void setup(
   inicializarLasers();
 
   delay(5000); //5 segundos
-
   digitalWrite(STBY, HIGH);
+
+  retrocesoDer();
+  delay(300);
+  
 )
 
 void loop(){
@@ -37,27 +40,35 @@ void loop(){
   bool rivalIzq = rivalDetectado(distIzq());
 
   switch(estadoActual){
-    case BASE:
+    case BUSQUEDA:
       if(rivalDer && rivalIzq){
         avance();
+        delay(1000);
       }else if(rivalIzq){
         giroIzquierda();
-        avance();
+        delay(1000);
+        detener();
       }else if(rivalDer){
         giroDerecha();
-        avance();
+        delay(1000);
+        detener();
       }else{
         busqueda();
       }
     break;
     case RETROCO:
+      retroceso();
+      delay(1500);
     break;
 
     case: GIRO_DER:
+      
     break;
 
     case: GIRO_IZQ:
-
   }
 
+  if(){
+  }
+  
 }
