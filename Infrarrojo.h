@@ -4,11 +4,15 @@
 #include <Arduino.h>
 
 //Sensor TCRT5000
-const int infraDer = 11;
-const int infraIzq = 12;
+const int infraFrontDer = A0;
+const int infraFrontIzq = A1;
+const int infraTrasDer = A2;
+const int infraTrasIzq = A3;
 
 
-int detectar_der();
-int detectar_izq();
+int detectarFrontDer();
+int detectarFrontIzq();
+int detectarTrasDer();
+int detectarTrasIzq();
 
 #endif
