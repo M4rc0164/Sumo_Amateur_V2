@@ -20,6 +20,25 @@ void retroceso(){
   analogWrite(PWMB, velociadMid);
 }
 
+void retrocesoDer(){
+  digitalWrite(AI1, HIGH);
+  digitalWrite(AI2, LOW);
+  digitalWrite(BI1, HIGH);
+  digitalWrite(BI2, LOW);
+  analogWrite(PWMA, velociadSuave);
+  analogWrite(PWMB, velociadMid);
+}
+
+void retrocesoIzq(){
+  digitalWrite(AI1, HIGH);
+  digitalWrite(AI2, LOW);
+  digitalWrite(BI1, HIGH);
+  digitalWrite(BI2, LOW);
+  analogWrite(PWMA, velociadMid);
+  analogWrite(PWMB, velociadSuave);
+}
+
+
 void giroDerecha(){
   digitalWrite(AI1, HIGH);
   digitalWrite(AI2, LOW);
