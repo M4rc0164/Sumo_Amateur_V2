@@ -39,7 +39,7 @@ void retrocesoIzq(){
 }
 
 
-void giroDerecha(){
+void ejeDerecha(){
   digitalWrite(AI1, HIGH);
   digitalWrite(AI2, LOW);
   digitalWrite(BI1, LOW);
@@ -48,7 +48,7 @@ void giroDerecha(){
   analogWrite(PWMB, velocidadSuave);
 }
 
-void giroIzquierda(){
+void ejeIzquierda(){
   digitalWrite(AI1, LOW);
   digitalWrite(AI2, HIGH);
   digitalWrite(BI1, HIGH);
