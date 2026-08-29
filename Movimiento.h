@@ -13,7 +13,7 @@ const int BIN2 = 7;
 const int PWMB = 6;
 
 //Variables
-const int velociadMid = 180;
+const int velocidadMid = 180;
 const int velocidadMax = 230;
 const int velocidadSuave = 150;
 
