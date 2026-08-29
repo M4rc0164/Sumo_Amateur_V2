@@ -9,6 +9,7 @@ const int infraFrontIzq = A1;
 const int infraTrasDer = A2;
 const int infraTrasIzq = A3;
 
+const int umbralLineaBlanca = 100;
 
 int detectarFrontDer();
 int detectarFrontIzq();
