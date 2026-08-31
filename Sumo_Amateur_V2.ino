@@ -1,11 +1,12 @@
 #include "Movimiento.h"
 #include "Laser.h"
-
 #include "Infrarrojo.h"
 
 //Estados de maniobra
-enum EstadoLRT {BUSQUEDA, RETROCO, GIRO_DER, GIRO_IZQ}
-EstadoLRT estadoActual = BUSQUEDA;
+enum EstadoLRT { ATAQUE,
+                 RETROCO,
+                 AVANCE,
+                 BUSQUEDA } EstadoLRT estadoActual = ATAQUE;
 
 unsigned long tiempoInicio = 0;
 
@@ -26,49 +27,70 @@ void setup(
 
   inicializarLasers();
 
-  delay(5000); //5 segundos
+  delay(5000);  //5 segundos
   digitalWrite(STBY, HIGH);
 
   retrocesoDer();
   delay(300);
-  
-)
 
-void loop(){
+  )
+
+  void loop() {
 
   bool rivalDer = rivalDetectado(distDer());
   bool rivalIzq = rivalDetectado(distIzq());
+  bool rival = rivalDetectado(distDer()) && rivalDetectado(distIzq());
 
-  switch(estadoActual){
-    case BUSQUEDA:
-      if(rivalDer && rivalIzq){
+  int lecturaFrontDer = detectarFrontDer();
+  int lecturaFrontIzq = detectarFrontIzq();
+  int lecturaTrasera = detectarTras();
+
+  if (lecturaFrontDer < umbralLineaBlanca && lecturaFrontIzq < umbralLineaBlanca) {
+    estadoActual = RETROCO;
+  } else if (lecturaTrasera < umbralLineaBlanca) {
+    estadoActual = AVANCE;
+  } else if (lecturaFrontIzq < umbralLineaBlanca) {
+    retrocesoDer();
+    estadoActual = RETROCO;
+  } else if (lecturaFrontDer < umbralLineaBlanca) {
+    retrocesoIzq();
+    estadoActual = RETROCO;
+  } else{
+    estadoActual = ATAQUE
+  }
+
+  switch (estadoActual) {
+    case RETROCO:
+      retroceso();
+      delay(2000);
+      break;
+    case AVANCE:
+      avance();
+      delay(2000);
+    case ATAQUE:
+      if (rival) {
         avance();
         delay(1000);
-      }else if(rivalIzq){
+      } else if (rivalIzq) {
         ejeIzquierda();
         delay(1000);
         detener();
-      }else if(rivalDer){
+      } else if (rivalDer) {
         ejeDerecha();
         delay(1000);
         detener();
-      }else{
-        busqueda();
+      } else {
+        estadoActual = BUSQUEDA;
       }
-    break;
-    case RETROCO:
-      retroceso();
-      delay(1500);
-    break;
-
-    case: GIRO_DER:
-      
-    break;
-
-    case: GIRO_IZQ:
+      break;
+    case BUSQUEDA:
+      ejeDerecha();
+      delay(1000);
+      if (rival || rivaDer || rivalIzq) {
+        estadoActual = ATAQUE;
+      }
+      ejeIzq();
+      delay(1200);
+      break;
   }
-
-  if(){
-  }
-  
 }
