@@ -1,0 +1,418 @@
+#include <Wire.h>
+
+#include "Adafruit_VL53L0X.h"
+
+Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+ 
+void setup(){
+  Serial.begin(9600);
+  Wire.begin();
+
+  if(!low.begin()){
+    Serial.println(F("Error al iniciar sensor"));
+    while(1);
+  }
+}
+
+void loop(){
+  VL53L0X_RangingMeasurementData_t measure;
+
+  lox.racingTest(&measure, false);
+
+  if (measure.RangeStatus != 4){
+    Serial.print(measure.RangeMilimeter);
+    Serial.println("mm");
+  }
+  else{
+    Serial.println("Fuera de Rango")
+  }
+  delay(50)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <Wire.h>
+#include "Adafruit_VL53L0X.h"
+
+#define QRE_FL A0   // Frente izquierdo
+#define QRE_FR A1   // Frente derecho
+#define QRE_RL A2   // Trasero izquierdo
+#define QRE_RR A3   // Trasero derecho
+
+#define LINE_THRESHOLD 500
+
+// VL53L0X
+
+#define XSHUT_LEFT  2
+#define XSHUT_RIGHT 3
+
+#define ADDRESS_LEFT  0x30
+#define ADDRESS_RIGHT 0x31
+
+Adafruit_VL53L0X sensorLeft;
+Adafruit_VL53L0X sensorRight;
+// TB6612FNG
+
+#define PWMA 5
+#define AIN1 7
+#define AIN2 8
+
+#define PWMB 6
+#define BIN1 9
+#define BIN2 10
+
+#define STBY 4
+
+
+int velocidadAtaque = 255;
+int velocidadBusqueda = 150;
+int velocidadRetroceso = 220;
+int velocidadGiro = 190;
+
+#define DISTANCIA_ATAQUE 700   // mm
+
+void motorIzquierdo(int velocidad) {
+
+  velocidad = constrain(velocidad, -255, 255);
+
+  if (velocidad > 0) {
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    analogWrite(PWMA, velocidad);
+  }
+
+  else if (velocidad < 0) {
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, HIGH);
+    analogWrite(PWMA, -velocidad);
+  }
+
+  else {
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    analogWrite(PWMA, 0);
+  }
+}
+
+
+void motorDerecho(int velocidad) {
+
+  velocidad = constrain(velocidad, -255, 255);
+
+  if (velocidad > 0) {
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    analogWrite(PWMB, velocidad);
+  }
+
+  else if (velocidad < 0) {
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, HIGH);
+    analogWrite(PWMB, -velocidad);
+  }
+
+  else {
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, LOW);
+    analogWrite(PWMB, 0);
+  }
+}
+
+
+void avanzar(int velocidad) {
+  motorIzquierdo(velocidad);
+  motorDerecho(velocidad);
+}
+
+
+void retroceder(int velocidad) {
+  motorIzquierdo(-velocidad);
+  motorDerecho(-velocidad);
+}
+
+
+void girarIzquierda(int velocidad) {
+  motorIzquierdo(-velocidad);
+  motorDerecho(velocidad);
+}
+
+
+void girarDerecha(int velocidad) {
+  motorIzquierdo(velocidad);
+  motorDerecho(-velocidad);
+}
+
+
+void detener() {
+  motorIzquierdo(0);
+  motorDerecho(0);
+}
+
+int distanciaIzquierda() {
+
+  VL53L0X_RangingMeasurementData_t medida;
+
+  sensorLeft.rangingTest(&medida, false);
+
+  if (medida.RangeStatus != 4) {
+    return medida.RangeMilliMeter;
+  }
+
+  return 8190;
+}
+
+
+int distanciaDerecha() {
+
+  VL53L0X_RangingMeasurementData_t medida;
+
+  sensorRight.rangingTest(&medida, false);
+
+  if (medida.RangeStatus != 4) {
+    return medida.RangeMilliMeter;
+  }
+
+  return 8190;
+}
+
+
+bool bordeDetectado() {
+
+  int FL = analogRead(QRE_FL);
+  int FR = analogRead(QRE_FR);
+  int RL = analogRead(QRE_RL);
+  int RR = analogRead(QRE_RR);
+
+  if (FL > LINE_THRESHOLD ||
+      FR > LINE_THRESHOLD ||
+      RL > LINE_THRESHOLD ||
+      RR > LINE_THRESHOLD) {
+
+    return true;
+  }
+
+  return false;
+}
+
+
+void escaparBorde() {
+
+  int FL = analogRead(QRE_FL);
+  int FR = analogRead(QRE_FR);
+  int RL = analogRead(QRE_RL);
+  int RR = analogRead(QRE_RR);
+
+  if (FL > LINE_THRESHOLD || FR > LINE_THRESHOLD) {
+
+    retroceder(velocidadRetroceso);
+
+    delay(300);
+
+    if (FL > FR)
+      girarDerecha(velocidadGiro);
+    else
+      girarIzquierda(velocidadGiro);
+
+    delay(350);
+
+    detener();
+
+    return;
+  }
+
+  if (RL > LINE_THRESHOLD || RR > LINE_THRESHOLD) {
+
+    avanzar(velocidadRetroceso);
+
+    delay(300);
+
+    if (RL > RR)
+      girarDerecha(velocidadGiro);
+    else
+      girarIzquierda(velocidadGiro);
+
+    delay(350);
+
+    detener();
+
+    return;
+  }
+}
+
+
+void buscarOponente() {
+
+
+  girarDerecha(velocidadBusqueda);
+
+  delay(20);
+}
+
+
+void atacar(int izquierda, int derecha) {
+
+  if (izquierda < DISTANCIA_ATAQUE &&
+      derecha < DISTANCIA_ATAQUE) {
+
+    avanzar(velocidadAtaque);
+  }
+
+  else if (izquierda < DISTANCIA_ATAQUE) {
+
+    motorIzquierdo(100);
+    motorDerecho(velocidadAtaque);
+  }
+
+  else if (derecha < DISTANCIA_ATAQUE) {
+
+    motorIzquierdo(velocidadAtaque);
+    motorDerecho(100);
+  }
+
+  else {
+
+    buscarOponente();
+  }
+}
+
+
+void configurarSensores() {
+
+  pinMode(XSHUT_LEFT, OUTPUT);
+  pinMode(XSHUT_RIGHT, OUTPUT);
+
+  digitalWrite(XSHUT_LEFT, LOW);
+  digitalWrite(XSHUT_RIGHT, LOW);
+
+  delay(100);
+
+  digitalWrite(XSHUT_LEFT, HIGH);
+  delay(100);
+
+  if (!sensorLeft.begin(ADDRESS_LEFT)) {
+
+    Serial.println("ERROR: VL53 izquierdo");
+    while (1);
+  }
+
+  digitalWrite(XSHUT_RIGHT, HIGH);
+  delay(100);
+
+  if (!sensorRight.begin(ADDRESS_RIGHT)) {
+
+    Serial.println("ERROR: VL53 derecho");
+    while (1);
+  }
+
+  Serial.println("VL53L0X configurados");
+}
+
+
+void setup() {
+
+  Serial.begin(115200);
+
+  pinMode(PWMA, OUTPUT);
+  pinMode(AIN1, OUTPUT);
+  pinMode(AIN2, OUTPUT);
+
+  pinMode(PWMB, OUTPUT);
+  pinMode(BIN1, OUTPUT);
+  pinMode(BIN2, OUTPUT);
+
+  pinMode(STBY, OUTPUT);
+
+  digitalWrite(STBY, HIGH);
+
+  detener();
+
+  pinMode(QRE_FL, INPUT);
+  pinMode(QRE_FR, INPUT);
+  pinMode(QRE_RL, INPUT);
+  pinMode(QRE_RR, INPUT);
+
+  Wire.begin();
+
+  configurarSensores();
+
+
+  delay(5000);
+
+  Serial.println("GO!");
+}
+
+
+void loop() {
+
+
+  int distL = distanciaIzquierda();
+  int distR = distanciaDerecha();
+
+
+  int FL = analogRead(QRE_FL);
+  int FR = analogRead(QRE_FR);
+  int RL = analogRead(QRE_RL);
+  int RR = analogRead(QRE_RR);
+
+
+  if (FL > LINE_THRESHOLD ||
+      FR > LINE_THRESHOLD ||
+      RL > LINE_THRESHOLD ||
+      RR > LINE_THRESHOLD) {
+
+    escaparBorde();
+
+    return;
+  }
+
+  atacar(distL, distR);
+
+
+  delay(10);
+}
