@@ -1,6 +1,6 @@
-#include Movimiento.h
-#include Laser.h
-#include Infrarrojo.h
+#include "Movimiento.h"
+#include "Laser.h"
+#include "Infrarrojo.h"
 
 void avance(){
   digitalWrite(AI1, LOW);
@@ -34,8 +34,8 @@ void retrocesoIzq(){
   digitalWrite(AI2, LOW);
   digitalWrite(BI1, HIGH);
   digitalWrite(BI2, LOW);
-  analogWrite(PWMA, velociadMid);
-  analogWrite(PWMB, velociadSuave);
+  analogWrite(PWMA, velocidadMid);
+  analogWrite(PWMB, velocidadSuave);
 }
 
 

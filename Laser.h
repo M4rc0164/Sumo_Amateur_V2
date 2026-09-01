@@ -14,8 +14,10 @@ extern VL53L0X sensorIzq;
 #define direccionIzq 0x31
 
 
-const int XSHUTA = 10; //Sensor Derecho 
-const int XSHUTB = 9; //Sensor Izquierdo 
+const uint8_t XSHUTA = 10; //Sensor Derecho 
+const uint8_t XSHUTB = 9; //Sensor Izquierdo 
+
+const int distanciaAtaque = 400; //mm
 
 void inicializarLasers();
 int distDer();

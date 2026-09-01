@@ -4,13 +4,15 @@
 #include <Arduino.h>
 
 //Driver TB6612FNG
-const int STBY = 3;
-const int AIN1 = 2;
-const int AIN2 = 4;
-const int PWMA = 5;
-const int BIN1 = 8;
-const int BIN2 = 7;
-const int PWMB = 6;
+const uint8_t STBY = 3;
+const uint8_t AI1 = 2;
+const uint8_t AI2 = 4;
+const uint8_t PWMA = 5;
+const uint8_t BI1 = 8;
+const uint8_t BI2 = 7;
+const uint8_t PWMB = 6;
+//Para la definición de pines se utiliza uint8_t por cuestiones de optimización, pues ocupa solo 1 byte
+
 
 //Variables
 const int velocidadMid = 180;

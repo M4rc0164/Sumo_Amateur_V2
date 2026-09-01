@@ -44,10 +44,10 @@ int distIzq(){
 }
 
 bool rivalDetectado(int dist){
-  if(dist < 300){
-    return true
+  if(dist < distanciaAtaque){
+    return true;
   }else{
-    return false
+    return false;
   }
 }
 

@@ -4,9 +4,9 @@
 #include <Arduino.h>
 
 //Sensor TCRT5000
-const int infraFrontDer = A0;
-const int infraFrontIzq = A1;
-const int infraTras = A2;
+const uint8_t infraFrontDer = A0;
+const uint8_t infraFrontIzq = A1;
+const uint8_t infraTras = A2;
 
 const int umbralLineaBlanca = 100;
 

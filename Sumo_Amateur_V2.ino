@@ -6,24 +6,26 @@
 enum EstadoLRT { ATAQUE,
                  RETROCO,
                  AVANCE,
-                 BUSQUEDA } EstadoLRT estadoActual = ATAQUE;
+                 BUSQUEDA };
+EstadoLRT estadoActual = ATAQUE;
 
 unsigned long tiempoInicio = 0;
 
 
-void setup(
+void setup() {
   //Pines puente H
-  pinMode(pinSTBY, OUTPUT);
-  pinMode(pinPWMA, OUTPUT);
-  pinMode(pinAIN1, OUTPUT);
-  pinMode(pinAIN2, OUTPUT);
-  pinMode(pinPWMB, OUTPUT);
-  pinMode(pinBIN1, OUTPUT);
-  pinMode(pinBIN2, OUTPUT);
+  pinMode(STBY, OUTPUT);
+  pinMode(PWMA, OUTPUT);
+  pinMode(AI1, OUTPUT);
+  pinMode(AI2, OUTPUT);
+  pinMode(PWMB, OUTPUT);
+  pinMode(BI1, OUTPUT);
+  pinMode(BI2, OUTPUT);
 
   //Pines sensores infrarrojo
-  pinMode(pinPisoIZQ, INPUT);
-  pinMode(pinPisoDER, INPUT);
+  pinMode(infraTras, INPUT);
+  pinMode(infraFrontIzq, INPUT);
+  pinMode(infraFrontDer, INPUT)
 
   inicializarLasers();
 
@@ -32,10 +34,9 @@ void setup(
 
   retrocesoDer();
   delay(300);
+}
 
-  )
-
-  void loop() {
+void loop() {
 
   bool rivalDer = rivalDetectado(distDer());
   bool rivalIzq = rivalDetectado(distIzq());
@@ -55,8 +56,8 @@ void setup(
   } else if (lecturaFrontDer < umbralLineaBlanca) {
     retrocesoIzq();
     estadoActual = RETROCO;
-  } else{
-    estadoActual = ATAQUE
+  } else {
+    estadoActual = ATAQUE;
   }
 
   switch (estadoActual) {
@@ -67,6 +68,7 @@ void setup(
     case AVANCE:
       avance();
       delay(2000);
+      break;
     case ATAQUE:
       if (rival) {
         avance();
@@ -86,10 +88,10 @@ void setup(
     case BUSQUEDA:
       ejeDerecha();
       delay(1000);
-      if (rival || rivaDer || rivalIzq) {
+      if (rival || rivalDer || rivalIzq) {
         estadoActual = ATAQUE;
       }
-      ejeIzq();
+      ejeIzquierda();
       delay(1200);
       break;
   }

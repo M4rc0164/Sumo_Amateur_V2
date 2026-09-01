@@ -1,16 +1,13 @@
 #include "Infrarrojo.h"
 
 int detectarFrontDer(){
-  int lecturaFrontDer = analogRead(infraFrontDer);
-  return lecturaFrontDer;
+  return analogRead(infraFrontDer);
 }
 
 int detectarFrontIzq(){
-  int lecturaFrontIzq = analogRead(infraFrontIzq);
-  return lecturaFrontIzq;
+  return analogRead(infraFrontIzq);
 }
 int detectarTras(){
-  int lecturaTras = analogRead(infraTras);
-  return lecturaTras;
+  return = analogRead(infraTras);
 }
 
